@@ -175,7 +175,7 @@ class AutoSplit(QtGui.QMainWindow, design.Ui_MainWindow):
 
     # FUNCTIONS
 
-    # TODO add checkbox for going back to image 1 when resetting.
+    #TODO add checkbox for going back to image 1 when resetting.
     def browse(self):
         # User selects the file with the split images in it.
         self.split_image_directory = str(
@@ -997,6 +997,15 @@ class AutoSplit(QtGui.QMainWindow, design.Ui_MainWindow):
         self.highest_similarity = 0.001
 
     # exit safely when closing the window
+    
+    # NOTE: We get a lot of the following console warnings and the UI
+    # gets  partly messed up when calling from a different thread.
+    # For that reason, we still let the user decide if they wanna save,
+    # but we won't allow them back onto the app.
+    #
+    # QPixmap: It is not safe to use pixmaps outside the GUI thread
+    # QObject::startTimer: timers cannot be started from another thread
+    # QApplication: Object event filter cannot be in a different thread.
     def closeEvent(self, event=None):
         def exit():
             if event is not None:
@@ -1016,7 +1025,10 @@ class AutoSplit(QtGui.QMainWindow, design.Ui_MainWindow):
                 else os.path.basename(self.last_successfully_loaded_settings_file_path)
             warning_message = f"Do you want to save changes made to settings file {settings_file_name}?"
 
-            warning = msgBox.warning(self, "AutoSplit", warning_message, msgBox.Yes | msgBox.No | msgBox.Cancel)
+            options = msgBox.Yes | msgBox.No | msgBox.Cancel \
+                if event is not None \
+                else msgBox.Yes | msgBox.No
+            warning = msgBox.warning(self, "AutoSplit", warning_message, options)
 
             if warning == msgBox.Yes:
                 # TODO: Don't close if user cancelled the save
