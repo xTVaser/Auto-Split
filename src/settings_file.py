@@ -81,12 +81,13 @@ def saveSettings(self):
         with open(self.last_successfully_loaded_settings_file_path, 'wb') as f:
             pickle.dump(self.last_saved_settings, f)
 
-def saveSettingsAs(self):
-    # user picks save destination
-    self.save_settings_file_path = str(QtWidgets.QFileDialog.getSaveFileName(self, "Save Settings As", "", "PKL (*.pkl)"))
 
-    #if user cancels save destination window, don't save settings
-    if self.save_settings_file_path == '':
+def saveSettingsAs(self):
+    # User picks save destination
+    self.save_settings_file_path = QtWidgets.QFileDialog.getSaveFileName(self, "Save Settings As", "", "PKL (*.pkl)")[0]
+
+    # If user cancels save destination window, don't save settings
+    if not self.save_settings_file_path:
         return
 
     self.getSaveSettingsValues()
