@@ -73,6 +73,8 @@ def compare_l2_norm_masked(source, capture, mask):
     # The L2 Error is summed across all pixels, so this normalizes
     max_error = (3 * numpy.count_nonzero(mask) * 255 * 255) ** 0.5
 
+    if not max_error:
+        return 0
     return 1 - (error / max_error)
 
 def compare_template(source, capture):
@@ -156,4 +158,6 @@ def compare_phash_masked(source, capture, mask):
     source_hash = imagehash.phash(source)
     capture_hash = imagehash.phash(capture)
 
+    if not source_hash + capture_hash:
+        return 0
     return 1 - ((source_hash - capture_hash)/64.0)
